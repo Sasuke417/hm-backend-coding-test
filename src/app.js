@@ -7,9 +7,9 @@ const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
 module.exports = (db) => {
-    app.get('/health', (req, res) => res.send('Healthy'));
+    app.route('/health').get((req, res) => res.send('Healthy'));
 
-    app.post('/rides', jsonParser, (req, res) => {
+    app.route('/rides').post( jsonParser, (req, res) => {
         const startLatitude = Number(req.body.start_lat);
         const startLongitude = Number(req.body.start_long);
         const endLatitude = Number(req.body.end_lat);
@@ -55,7 +55,8 @@ module.exports = (db) => {
 
         var values = [req.body.start_lat, req.body.start_long, req.body.end_lat, req.body.end_long, req.body.rider_name, req.body.driver_name, req.body.driver_vehicle];
         
-        const result = db.run('INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (?, ?, ?, ?, ?, ?, ?)', values, function (err) {
+        //const result = 
+        db.run(`INSERT INTO Rides(startLat, startLong, endLat, endLong, riderName, driverName, driverVehicle) VALUES (${values[0]},${values[1]},${values[2]},${values[3]},${values[4]},${values[5]},${values[6]})`, values, function (err) {
             if (err) {
                 return res.send({
                     error_code: 'SERVER_ERROR',
@@ -76,7 +77,7 @@ module.exports = (db) => {
         });
     });
 
-    app.get('/rides', (req, res) => {
+    app.route('/rides').get((req, res) => {
         db.all('SELECT * FROM Rides', function (err, rows) {
             if (err) {
                 return res.send({
@@ -96,7 +97,7 @@ module.exports = (db) => {
         });
     });
 
-    app.get('/rides/:id', (req, res) => {
+    app.route('/rides/:id').get((req, res) => {
         db.all(`SELECT * FROM Rides WHERE rideID='${req.params.id}'`, function (err, rows) {
             if (err) {
                 return res.send({
